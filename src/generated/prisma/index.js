@@ -169,6 +169,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -195,8 +199,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Usuario {\n  id           String     @id @default(uuid()) @db.Uuid\n  nome         String     @db.VarChar(100)\n  email        String     @unique @db.VarChar(100)\n  senha        String\n  criadoEm     DateTime   @default(now()) @map(\"criado_em\")\n  atualizadoEm DateTime   @updatedAt @map(\"atualizado_em\")\n  avatar       String?\n  likes        Like[]\n  following    Follower[] @relation(\"Following\")\n  followers    Follower[] @relation(\"Followers\")\n  tweets       Tweet[]\n\n  @@map(\"usuarios\")\n}\n\nmodel Tweet {\n  id           String    @id @default(uuid()) @db.Uuid\n  descricao    String\n  tipo         TipoTweet @default(tweet)\n  usuarioId    String    @map(\"usuario_id\") @db.Uuid\n  criadoEm     DateTime  @default(now()) @map(\"criado_em\")\n  atualizadoEm DateTime  @updatedAt @map(\"atualizado_em\")\n  parentId     String?   @map(\"parent_id\") @db.Uuid\n  likes        Like[]\n  parent       Tweet?    @relation(\"TweetReplies\", fields: [parentId], references: [id])\n  replies      Tweet[]   @relation(\"TweetReplies\")\n  usuario      Usuario   @relation(fields: [usuarioId], references: [id])\n\n  @@map(\"tweets\")\n}\n\nmodel Like {\n  id        String  @id @default(uuid()) @db.Uuid\n  usuarioId String  @map(\"usuario_id\") @db.Uuid\n  tweetId   String  @map(\"tweet_id\") @db.Uuid\n  tweet     Tweet   @relation(fields: [tweetId], references: [id])\n  usuario   Usuario @relation(fields: [usuarioId], references: [id])\n\n  @@unique([usuarioId, tweetId])\n  @@map(\"likes\")\n}\n\nmodel Follower {\n  id          String  @id @default(uuid()) @db.Uuid\n  followerId  String  @map(\"seguidor_id\") @db.Uuid\n  followingId String  @map(\"seguindo_id\") @db.Uuid\n  follower    Usuario @relation(\"Following\", fields: [followerId], references: [id])\n  following   Usuario @relation(\"Followers\", fields: [followingId], references: [id])\n\n  @@unique([followerId, followingId])\n  @@map(\"seguidores\")\n}\n\nenum TipoTweet {\n  tweet\n  reply\n}\n",
-  "inlineSchemaHash": "17144fcac48e35dd1df9133e749357466ae0a61965ec76f0faf7f69ae70cc879",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Usuario {\n  id           String     @id @default(uuid()) @db.Uuid\n  nome         String     @db.VarChar(100)\n  email        String     @unique @db.VarChar(100)\n  senha        String\n  criadoEm     DateTime   @default(now()) @map(\"criado_em\")\n  atualizadoEm DateTime   @updatedAt @map(\"atualizado_em\")\n  avatar       String?\n  likes        Like[]\n  following    Follower[] @relation(\"Following\")\n  followers    Follower[] @relation(\"Followers\")\n  tweets       Tweet[]\n\n  @@map(\"usuarios\")\n}\n\nmodel Tweet {\n  id           String    @id @default(uuid()) @db.Uuid\n  descricao    String\n  tipo         TipoTweet @default(tweet)\n  usuarioId    String    @map(\"usuario_id\") @db.Uuid\n  criadoEm     DateTime  @default(now()) @map(\"criado_em\")\n  atualizadoEm DateTime  @updatedAt @map(\"atualizado_em\")\n  parentId     String?   @map(\"parent_id\") @db.Uuid\n  likes        Like[]\n  parent       Tweet?    @relation(\"TweetReplies\", fields: [parentId], references: [id])\n  replies      Tweet[]   @relation(\"TweetReplies\")\n  usuario      Usuario   @relation(fields: [usuarioId], references: [id])\n\n  @@map(\"tweets\")\n}\n\nmodel Like {\n  id        String  @id @default(uuid()) @db.Uuid\n  usuarioId String  @map(\"usuario_id\") @db.Uuid\n  tweetId   String  @map(\"tweet_id\") @db.Uuid\n  tweet     Tweet   @relation(fields: [tweetId], references: [id])\n  usuario   Usuario @relation(fields: [usuarioId], references: [id])\n\n  @@unique([usuarioId, tweetId])\n  @@map(\"likes\")\n}\n\nmodel Follower {\n  id          String  @id @default(uuid()) @db.Uuid\n  followerId  String  @map(\"seguidor_id\") @db.Uuid\n  followingId String  @map(\"seguindo_id\") @db.Uuid\n  follower    Usuario @relation(\"Following\", fields: [followerId], references: [id])\n  following   Usuario @relation(\"Followers\", fields: [followingId], references: [id])\n\n  @@unique([followerId, followingId])\n  @@map(\"seguidores\")\n}\n\nenum TipoTweet {\n  tweet\n  reply\n}\n",
+  "inlineSchemaHash": "3f7a070feb161170c50deb9271ad76db098f3990c51b646f792168fa83058a05",
   "copyEngine": true
 }
 
@@ -237,6 +241,10 @@ Object.assign(exports, Prisma)
 // file annotations for bundling tools to include these files
 path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "src/generated/prisma/query_engine-windows.dll.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/prisma/schema.prisma")
